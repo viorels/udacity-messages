@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Compose{% endblock %}
+{% block content %}
+<form method="post">
+  From: {{ user.nickname() }}<br>
+  To: <input type="text" name="subject"><br>
+  <textarea name="content"></textarea><br>
+  <input type="submit" value="Send">
+</form>
+{% endblock %}
