@@ -2,9 +2,9 @@ import logging
 from google.appengine.ext import ndb
 
 
-def user_key(email):
+def user_key(user):
     """Constructs a Datastore key for an user with specified email."""
-    return ndb.Key('User', email)
+    return ndb.Key('User', user.email())
 
 
 class UserProfile(ndb.Model):

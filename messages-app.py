@@ -38,29 +38,26 @@ class BaseRequestHandler(webapp2.RequestHandler):
 
 class MainPage(BaseRequestHandler):
     def get(self):
-        user = users.get_current_user()
-        if user:
-            self.render('home.html')
-        else:
-            self.redirect(users.create_login_url(self.request.uri))
+        self.render('home.html')
 
 
 class InboxPage(BaseRequestHandler):
     def get(self):
         user = users.get_current_user()
-        self.render("inbox.html", {'messages': Message.list_for_user(user.email())})
+        self.render("inbox.html", {'messages': Message.list_for_user(user)})
 
 
 class ComposePage(BaseRequestHandler):
     def get(self):
-        user = users.get_current_user()
         self.render('compose.html')
 
     def post(self):
-        to_user = self.request.get('to')
+        to = self.request.get('to')
         subject = self.request.get('subject')
         content = self.request.get('content')
-        Message.send(from_user=users.get_current_user().email(),
+        from_user = users.get_current_user()
+        to_user = users.User(to)
+        Message.send(from_user=from_user,
                      to_user=to_user,
                      subject=subject,
                      content=content)
@@ -69,7 +66,7 @@ class ComposePage(BaseRequestHandler):
 
 class InitPage(BaseRequestHandler):
     def get(self):
-        Message.populate(users.get_current_user().email())
+        Message.populate(users.get_current_user())
         self.response.write('ok')
 
 
