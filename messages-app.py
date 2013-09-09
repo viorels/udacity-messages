@@ -1,5 +1,6 @@
 import cgi
 import logging
+import os
 import webapp2
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
@@ -17,6 +18,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
     """
   
     def render(self, template_name, template_values={}):
+        self.response.headers['Content-Type'] = 'text/html'
         values = {
             'request': self.request,
             'user': users.get_current_user(),
@@ -32,23 +34,48 @@ class BaseRequestHandler(webapp2.RequestHandler):
 class MainPage(BaseRequestHandler):
     def get(self):
         user = users.get_current_user()
-
         if user:
-            self.response.headers['Content-Type'] = 'text/plain'
-            text = cgi.escape('Hello, %s' % user.nickname())
-            self.response.write(text)
+            self.render('base.html')
         else:
             self.redirect(users.create_login_url(self.request.uri))
 
 
+class MessagesPage(BaseRequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        self.response.headers['Content-Type'] = 'text/html'
+        text = 'Hello, %s<br>' % user.nickname()
+        self.response.write(text)
+
+        for message in Message.list_for_user(user):
+            message_info = "%s (%s)" % (message.subject, message.from_user)
+            self.response.write(cgi.escape(message_info) + '<br>')
+
+
+class ComposePage(BaseRequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        self.render('compose.html')
+
+    def post(self):
+        to_user = self.request.get('to')
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+        Message.send(from_user=users.get_current_user().email(),
+                     to_user=to_user,
+                     subject=subject,
+                     content=content)
+        self.render('compose.html', {'done': True})
+
+
 class InitPage(BaseRequestHandler):
     def get(self):
-        Message.populate(users.get_current_user())
+        Message.populate(users.get_current_user().email())
         self.response.write('ok')
 
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/messages', MessagesPage)
+    ('/messages', MessagesPage),
     ('/init', InitPage),
 ], debug=_DEBUG)

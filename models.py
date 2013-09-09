@@ -2,7 +2,12 @@ import logging
 from google.appengine.ext import ndb
 
 
-class User(ndb.Model):
+def user_key(email):
+    """Constructs a Datastore key for an user with specified email."""
+    return ndb.Key('User', email)
+
+
+class UserProfile(ndb.Model):
     groups = ndb.StringProperty(repeated=True)
 
 
@@ -16,27 +21,28 @@ class Message(ndb.Model):
     is_read = ndb.BooleanProperty(indexed=False, default=False)
     is_deleted = ndb.BooleanProperty(indexed=False, default=False)
 
-    def unread_count(self, user):
+    def unread_count_for_user(self, user):
         """Returns the count of unread messages for specified user"""
         pass
 
     @classmethod
-    def get_messages(self, user, older_then, limit):
+    def list_for_user(cls, user, older_then=None, limit=20):
         """Returns a list of messages delivered for the specified user"""
         # TODO: use saved cursors for pagination
-        cls.query()
+        return cls.query(ancestor=user_key(user)).order(-Message.sent_time).fetch(limit)
 
     @classmethod
     def send(cls, from_user, to_user, subject, content):
-        message = Message(from_user=from_user,
+        message = Message(parent=user_key(to_user),
+                          from_user=from_user,
                           to_user=to_user,
                           subject=subject,
                           content=content)
         key = message.put()
-        logging.debug('send %s => %s' % (subject, key))
+        logging.info('send %s => %s' % (subject, key))
 
     @classmethod
-    def populate(cls, user, count=42):
+    def populate(cls, user, count=1):
         for i in range(count):
             cls.send(from_user=user, to_user=user,
                      subject="subject %d" % i,
