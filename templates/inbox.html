@@ -4,6 +4,8 @@
 <ul>
   {% for message in messages %}
   <li>{{ message.from_user }} > {{ message.subject }}</li>
+  {% else %}
+  <li><em>No messages</em></li>
   {% endfor %}
 </ul>
 <a href="{{ logout_url|safe }}">Logout</a>
