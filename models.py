@@ -66,5 +66,11 @@ class GroupMessage(ndb.Model):
     content = ndb.TextProperty(indexed=False)
     sent_time = ndb.DateTimeProperty(auto_now_add=True)
 
-    def send(self, from_user, to_user, subject, content):
-        pass
+    @classmethod
+    def send(cls, from_user, to_group, subject, content):
+        message = GroupMessage(from_user=from_user,
+                               to_group=to_group,
+                               subject=subject,
+                               content=content)
+        key = message.put()
+        logging.info('group send %s => %s' % (subject, key))

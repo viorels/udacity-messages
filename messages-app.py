@@ -4,8 +4,10 @@ import os
 import webapp2
 import jinja2
 from google.appengine.api import users
+from google.appengine.api.mail import is_email_valid
 
-from models import Message
+from domain import is_valid_group
+from models import Message, GroupMessage
 
 # Set to true if we want to have our webapp print stack traces, etc
 _DEBUG = True
@@ -66,17 +68,28 @@ class ComposePage(BaseRequestHandler):
         self.render('compose.html')
 
     def post(self):
-        # users.is_current_user_admin() so he can send a group message ?
+        # TODO: users.is_current_user_admin() ? can he send a group message ?
         to = self.request.get('to')
         subject = self.request.get('subject')
         content = self.request.get('content')
         from_user = users.get_current_user()
-        to_user = users.User(to)
-        Message.send(from_user=from_user,
-                     to_user=to_user,
-                     subject=subject,
-                     content=content)
-        self.render('compose.html', {'done': True})
+
+        if is_valid_group(to):
+            group = to
+            GroupMessage.send(from_user=from_user,
+                              to_group=group,
+                              subject=subject,
+                              content=content)
+        else:
+            to_user = users.User(to)
+            Message.send(from_user=from_user,
+                         to_user=to_user,
+                         subject=subject,
+                         content=content)
+
+        self.render('compose.html', {'sent': True,
+                                     'subject': subject,
+                                     'to': to})
 
 
 class InitPage(BaseRequestHandler):
