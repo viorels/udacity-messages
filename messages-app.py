@@ -13,6 +13,7 @@ _DEBUG = True
 app_path = os.path.dirname(__file__)
 templates_path = os.path.join(app_path, 'templates')
 JINJA_ENVIRONMENT = jinja2.Environment(
+    autoescape=True,
     loader=jinja2.FileSystemLoader(templates_path),
     extensions=['jinja2.ext.autoescape'])
 
