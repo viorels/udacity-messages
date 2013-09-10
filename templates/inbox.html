@@ -4,10 +4,16 @@
 <table class="table table-striped table-hover">
   {% for message in messages %}
   <tr>
-    <td class="col-md-3"><strong>{{ message.from_user }}</strong></td>
+    <td class="col-md-3">
+      {% if not message.is_read %}<strong>{% endif %}
+        {{ message.from_user }}
+      {% if not message.is_read %}</strong>{% endif %}
+    </td>
     <td class="col-md-8">
       <span class="label label-info">group</span>
-      <strong><a href="{{ message.get_url()|safe }}">{{ message.subject }}</a></strong>
+      {% if not message.is_read %}<strong>{% endif %}
+        <a href="{{ message.get_url()|safe }}">{{ message.subject }}</a>
+      {% if not message.is_read %}</strong>{% endif %}
     </td>
     <td class="col-md-1">{{ message.sent_time.date() }}</td>
   </tr>

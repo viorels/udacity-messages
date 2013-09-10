@@ -29,7 +29,10 @@ class Message(ndb.Model):
 
     @classmethod
     def get_message(cls, message_key_url):
-        return ndb.Key(urlsafe=message_key_url).get()
+        message = ndb.Key(urlsafe=message_key_url).get()
+        message.is_read = True
+        message.put()
+        return message
 
     @classmethod
     def list_for_user(cls, user, limit=20):
