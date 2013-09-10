@@ -28,7 +28,7 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav">
-          <li {% if nav_active == 'inbox' %}class="active"{% endif %}><a href="/inbox">Inbox <span class="badge">42</span></a></li>
+          <li {% if nav_active == 'inbox' %}class="active"{% endif %}><a href="/inbox">Inbox <span class="badge">{{ unread_count }}</span></a></li>
           <li {% if nav_active == 'compose' %}class="active"{% endif %}><a href="/compose">Compose</a></li>
         </ul>
         <form class="navbar-form navbar-left" role="search">

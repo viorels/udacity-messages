@@ -7,7 +7,7 @@ from google.appengine.api import users
 from google.appengine.api.mail import is_email_valid
 
 from domain import is_valid_group
-from models import Message, GroupMessage
+from models import Message, GroupMessage, UserProfile
 
 # Set to true if we want to have our webapp print stack traces, etc
 _DEBUG = True
@@ -34,6 +34,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
             'logout_url': users.create_logout_url('/'),
             'nav_active': self.page_name(),
             'application_name': 'Udacity Messages',
+            'unread_count': self.unread_messages_count(),
         }
         values.update(template_values)
         template = JINJA_ENVIRONMENT.get_template(template_name)
@@ -41,6 +42,14 @@ class BaseRequestHandler(webapp2.RequestHandler):
 
     def page_name(self):
         return self.request.path.lstrip('/')
+
+    def unread_messages_count(self):
+        user = users.get_current_user()
+        unread_limit = 100
+        unread_count = UserProfile.for_user(user).get_unread_count(unread_limit)
+        if unread_count == unread_limit:
+            unread_count = '%s+' % unread_limit
+        return unread_count
 
 
 class MainPage(BaseRequestHandler):

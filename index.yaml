@@ -18,5 +18,12 @@ indexes:
 - kind: Message
   ancestor: yes
   properties:
+  - name: is_read
+  - name: sent_time
+    direction: desc
+
+- kind: Message
+  ancestor: yes
+  properties:
   - name: sent_time
     direction: desc

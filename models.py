@@ -16,6 +16,9 @@ class UserProfile(ndb.Model):
     def for_user(cls, user):
         return cls.get_or_insert(user_key(user).id(), user=user)
 
+    def get_unread_count(self, limit):
+        return Message.list_query(self.user).filter(Message.is_read == False).count(limit=limit)
+
     def update_groups(self, groups):
         """ Update user groups. Don't update groups manually in order to avoid
             group messages inconsistencies """
@@ -58,7 +61,7 @@ class Message(ndb.Model):
     sent_time = ndb.DateTimeProperty(auto_now_add=True)
     subject = ndb.StringProperty(indexed=False)
     content = ndb.TextProperty(indexed=False)
-    is_read = ndb.BooleanProperty(indexed=False, default=False)
+    is_read = ndb.BooleanProperty(indexed=True, default=False)
     is_deleted = ndb.BooleanProperty(indexed=False, default=False)
 
     def get_url(self):
@@ -75,8 +78,12 @@ class Message(ndb.Model):
     def list_for_user(cls, user, limit=20):
         """Returns a list of messages delivered for the specified user"""
         # TODO: use saved cursors for pagination
+        return cls.list_query(user).fetch(limit)
+
+    @classmethod
+    def list_query(cls, user):
         UserProfile.for_user(user).fetch_group_messages()
-        return cls.query(ancestor=user_key(user)).order(-Message.sent_time).fetch(limit)
+        return cls.query(ancestor=user_key(user)).order(-Message.sent_time)
 
     @classmethod
     def send(cls, from_user, to_user, subject, content, to_group=None, sent_time=None):
