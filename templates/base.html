@@ -31,12 +31,6 @@
           <li {% if nav_active == 'inbox' %}class="active"{% endif %}><a href="/inbox">Inbox <span class="badge">{{ unread_count }}</span></a></li>
           <li {% if nav_active == 'compose' %}class="active"{% endif %}><a href="/compose">Compose</a></li>
         </ul>
-        <form class="navbar-form navbar-left" role="search">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search">
-          </div>
-          <button type="submit" class="btn btn-default">Submit</button>
-        </form>
         <ul class="nav navbar-nav navbar-right">
           <li class="navbar-text">Hello, {{ user.nickname() }}</li>
           <li {% if nav_active == 'profile' %}class="active"{% endif %}><a href="/profile">Profile</a></li>
