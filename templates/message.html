@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{{ message.subject }}{% endblock %}
 {% block content %}
-Date: {{ message.sent_time }}<br>
-From: {{ message.from_user }}<br>
-To: {{ message.to_user }}<br>
-Subject: {{ message.subject }}<br>
-<br>
-{{ message.content }}
+<ul class="list-group">
+  <li class="list-group-item"><span class="col-md-1">Date</span>{{ message.sent_time }}</li>
+  <li class="list-group-item"><span class="col-md-1">From</span>{{ message.from_user }}</li>
+  <li class="list-group-item"><span class="col-md-1">To</span>{{ message.to_user }}</li>
+  <li class="list-group-item"><span class="col-md-1">Subject</span>{{ message.subject }}</li>
+</ul>
+<blockquote><p>{{ message.content }}</p></blockquote>
 {% endblock %}

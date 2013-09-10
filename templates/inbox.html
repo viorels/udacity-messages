@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Inbox{% endblock %}
 {% block content %}
-<ul>
+<table class="table table-striped table-hover">
   {% for message in messages %}
-  <li>{{ message.from_user }} > <a href="{{ message.get_url()|safe }}">{{ message.subject }}</a></li>
+  <tr>
+    <td class="col-md-3"><strong>{{ message.from_user }}</strong></td>
+    <td class="col-md-8">
+      <span class="label label-info">group</span>
+      <strong><a href="{{ message.get_url()|safe }}">{{ message.subject }}</a></strong>
+    </td>
+    <td class="col-md-1">{{ message.sent_time.date() }}</td>
+  </tr>
   {% else %}
   <li><em>No messages</em></li>
   {% endfor %}
+</table>
+<ul class="pager">
+  <li class="previous disabled"><a href="#">&larr; Newer</a></li>
+  <li class="next"><a href="#">Older &rarr;</a></li>
 </ul>
-<a href="{{ logout_url|safe }}">Logout</a>
 {% endblock %}

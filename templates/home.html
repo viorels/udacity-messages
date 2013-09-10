@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Hello, {{ user.nickname() }}!</h1>
-<a href="{{ logout_url|safe }}">Logout</a>
+<div class="jumbotron">
+  <div class="container">
+    <h1>Hello, {{ user.nickname() }}!</h1>
+    <p>...</p>
+    <p>
+      <a href="/inbox" class="btn btn-primary btn-lg">Inbox</a>
+    </p>
+  </div>
+</div>
 {% endblock %}

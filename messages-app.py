@@ -30,11 +30,15 @@ class BaseRequestHandler(webapp2.RequestHandler):
             'user': users.get_current_user(),
             'login_url': users.create_logout_url(self.request.uri),
             'logout_url': users.create_logout_url('/'),
+            'nav_active': self.page_name(),
             'application_name': 'Udacity Messages',
         }
         values.update(template_values)
         template = JINJA_ENVIRONMENT.get_template(template_name)
         self.response.out.write(template.render(values))
+
+    def page_name(self):
+        return self.request.path.lstrip('/')
 
 
 class MainPage(BaseRequestHandler):
