@@ -39,6 +39,7 @@ class UserProfile(ndb.Model):
             and insert them in users inbox """
         # logging.info('searching messages for groups %s newer then %s' % 
         #              (self.all_groups(), self.last_group_message))
+        last_time = self.last_group_message
         for group_message in GroupMessage.query(GroupMessage.to_group.IN(self.all_groups()),
                                                 GroupMessage.sent_time > self.last_group_message):
             # logging.info('found group message %s' % group_message)
@@ -48,7 +49,9 @@ class UserProfile(ndb.Model):
                          sent_time=group_message.sent_time,
                          subject=group_message.subject,
                          content=group_message.content)
-        self.last_group_message = datetime.utcnow()
+            if group_message.sent_time > last_time:
+                last_time = group_message.sent_time
+        self.last_group_message = last_time
         self.put()
 
 
