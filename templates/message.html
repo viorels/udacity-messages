@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ message.subject }}{% endblock %}
+{% block content %}
+Date: {{ message.sent_time }}<br>
+From: {{ message.from_user }}<br>
+To: {{ message.to_user }}<br>
+Subject: {{ message.subject }}<br>
+<br>
+{{ message.content }}
+{% endblock %}

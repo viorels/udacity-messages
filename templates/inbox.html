@@ -3,7 +3,7 @@
 {% block content %}
 <ul>
   {% for message in messages %}
-  <li>{{ message.from_user }} > {{ message.subject }}</li>
+  <li>{{ message.from_user }} > <a href="{{ message.get_url()|safe }}">{{ message.subject }}</a></li>
   {% else %}
   <li><em>No messages</em></li>
   {% endfor %}

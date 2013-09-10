@@ -24,9 +24,12 @@ class Message(ndb.Model):
     is_read = ndb.BooleanProperty(indexed=False, default=False)
     is_deleted = ndb.BooleanProperty(indexed=False, default=False)
 
-    def unread_count_for_user(self, user):
-        """Returns the count of unread messages for specified user"""
-        pass
+    def get_url(self):
+        return "/message/" + self.key.urlsafe()
+
+    @classmethod
+    def get_message(cls, message_key_url):
+        return ndb.Key(urlsafe=message_key_url).get()
 
     @classmethod
     def list_for_user(cls, user, limit=20):

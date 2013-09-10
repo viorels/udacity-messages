@@ -48,6 +48,15 @@ class InboxPage(BaseRequestHandler):
         self.render("inbox.html", {'messages': Message.list_for_user(user)})
 
 
+class MessagePage(BaseRequestHandler):
+    def get(self, message_key_url):
+        message = Message.get_message(message_key_url)
+        if message.to_user.user_id() == users.get_current_user().user_id():
+            self.render("message.html", {'message': message})
+        else:
+            self.error(403)
+
+
 class ComposePage(BaseRequestHandler):
     def get(self):
         self.render('compose.html')
@@ -75,6 +84,7 @@ class InitPage(BaseRequestHandler):
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/inbox', InboxPage),
+    ('/message/(.*)', MessagePage),
     ('/compose', ComposePage),
     ('/init', InitPage),
 ], debug=_DEBUG)
