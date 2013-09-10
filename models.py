@@ -37,12 +37,9 @@ class UserProfile(ndb.Model):
     def fetch_group_messages(self):
         """ Method called before listing messages to search for new group messages
             and insert them in users inbox """
-        # logging.info('searching messages for groups %s newer then %s' % 
-        #              (self.get_all_groups(), self.last_group_message))
         last_time = self.last_group_message
         for group_message in GroupMessage.query(GroupMessage.to_group.IN(self.get_all_groups()),
                                                 GroupMessage.sent_time > self.last_group_message):
-            # logging.info('found group message %s' % group_message)
             Message.send(from_user=group_message.from_user,
                          to_user=self.user,
                          to_group=group_message.to_group,
@@ -73,12 +70,13 @@ class Message(ndb.Model):
     @classmethod
     def get_message(cls, message_key_url):
         message = ndb.Key(urlsafe=message_key_url).get()
-        message.is_read = True
-        message.put()
+        if message and not message.is_read:
+            message.is_read = True
+            message.put()
         return message
 
     @classmethod
-    def list_for_user(cls, user, limit=20):
+    def list_for_user(cls, user, limit=100):
         """Returns a list of messages delivered for the specified user"""
         # TODO: use saved cursors for pagination
         return cls.list_query(user).fetch(limit)

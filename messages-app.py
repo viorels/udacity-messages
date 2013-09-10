@@ -4,9 +4,7 @@ import os
 import webapp2
 import jinja2
 from google.appengine.api import users
-from google.appengine.api.mail import is_email_valid
 
-from domain import is_valid_group
 from models import Message, GroupMessage, UserProfile
 
 # Set to true if we want to have our webapp print stack traces, etc
@@ -45,7 +43,7 @@ class BaseRequestHandler(webapp2.RequestHandler):
 
     def unread_messages_count(self):
         user = users.get_current_user()
-        unread_limit = 100
+        unread_limit = 99
         unread_count = UserProfile.for_user(user).get_unread_count(unread_limit)
         if unread_count == unread_limit:
             unread_count = '%s+' % unread_limit
@@ -66,10 +64,13 @@ class InboxPage(BaseRequestHandler):
 class MessagePage(BaseRequestHandler):
     def get(self, message_key_url):
         message = Message.get_message(message_key_url)
-        if message.to_user.user_id() == users.get_current_user().user_id():
-            self.render("message.html", {'message': message})
+        if message is not None:
+            if message.to_user.user_id() == users.get_current_user().user_id():
+                self.render("message.html", {'message': message})
+            else:
+                self.error(403)
         else:
-            self.error(403)
+            self.error(404)
 
 
 class ComposePage(BaseRequestHandler):
@@ -83,13 +84,13 @@ class ComposePage(BaseRequestHandler):
         content = self.request.get('content')
         from_user = users.get_current_user()
 
-        if is_valid_group(to):
+        if self.is_valid_group(to):
             group = to
             GroupMessage.send(from_user=from_user,
                               to_group=group,
                               subject=subject,
                               content=content)
-        else:
+        else:   # assume 'to' is an email
             to_user = users.User(to)
             Message.send(from_user=from_user,
                          to_user=to_user,
@@ -99,6 +100,14 @@ class ComposePage(BaseRequestHandler):
         self.render('compose.html', {'sent': True,
                                      'subject': subject,
                                      'to': to})
+
+    def is_valid_group(self, destination):
+        """Return true if destination is a valid known group"""
+        # TODO: for now we just check if this is not an email
+        if '@' in destination:  # is this an email ?
+            return False
+        else:
+            return True
 
 
 class ProfilePage(BaseRequestHandler):
@@ -113,10 +122,13 @@ class ProfilePage(BaseRequestHandler):
         UserProfile.for_user(users.get_current_user()).update_groups(groups)
         self.render('profile.html', {'saved': True, 'groups': groups_text})
 
-class InitPage(BaseRequestHandler):
+
+class SetupPage(BaseRequestHandler):
     def get(self):
-        Message.populate(users.get_current_user())
-        self.response.write('ok')
+        user = users.get_current_user()
+        Message.populate(user, 7)
+        UserProfile.for_user(user).update_groups(['python'])
+        self.render('home.html', {'setup': True})
 
 
 application = webapp2.WSGIApplication([
@@ -125,5 +137,5 @@ application = webapp2.WSGIApplication([
     ('/message/(.*)', MessagePage),
     ('/compose', ComposePage), 
     ('/profile', ProfilePage),
-    ('/init', InitPage),
+    ('/setup', SetupPage),
 ], debug=_DEBUG)
