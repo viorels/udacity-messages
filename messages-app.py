@@ -22,13 +22,14 @@ class BaseRequestHandler(webapp2.RequestHandler):
     When you call render(), we augment the template variables supplied with
     common ones like logged in 'user' and 'request' context
     """
-  
+
     def render(self, template_name, template_values={}):
         self.response.headers['Content-Type'] = 'text/html'
         values = {
             'request': self.request,
             'user': users.get_current_user(),
-            'logout_url': users.create_logout_url(self.request.uri),
+            'login_url': users.create_logout_url(self.request.uri),
+            'logout_url': users.create_logout_url('/'),
             'application_name': 'Udacity Messages',
         }
         values.update(template_values)
@@ -52,6 +53,7 @@ class ComposePage(BaseRequestHandler):
         self.render('compose.html')
 
     def post(self):
+        # users.is_current_user_admin() so he can send a group message ?
         to = self.request.get('to')
         subject = self.request.get('subject')
         content = self.request.get('content')

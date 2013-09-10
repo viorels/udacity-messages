@@ -3,16 +3,19 @@ from google.appengine.ext import ndb
 
 
 def user_key(user):
-    """Constructs a Datastore key for an user with specified email."""
+    """Constructs a Datastore key based on user's email"""
     return ndb.Key('User', user.email())
 
 
 class UserProfile(ndb.Model):
+    # parent = user_key(user)
+    user = ndb.UserProperty()
     groups = ndb.StringProperty(repeated=True)
 
 
 class Message(ndb.Model):
     """Models a one to one message"""
+    # parent = user_key(to_user)
     from_user = ndb.UserProperty()
     to_user = ndb.UserProperty()
     sent_time = ndb.DateTimeProperty(auto_now_add=True)
@@ -26,7 +29,7 @@ class Message(ndb.Model):
         pass
 
     @classmethod
-    def list_for_user(cls, user, older_then=None, limit=20):
+    def list_for_user(cls, user, limit=20):
         """Returns a list of messages delivered for the specified user"""
         # TODO: use saved cursors for pagination
         return cls.query(ancestor=user_key(user)).order(-Message.sent_time).fetch(limit)
