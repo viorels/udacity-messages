@@ -85,6 +85,18 @@ class MessagesTestCase(BaseTestCase):
         messages = Message.list_for_user(self.user2)
         self.assertEqual(1, len(messages))
 
+    def testAnyUserBelongsToAllGroup(self):
+        groups = UserProfile.for_user(self.user2).get_all_groups()
+        self.assertEqual(groups, ['all'])
+
+    def testAddUserToGroup(self):
+        user_profile = UserProfile.for_user(self.user2)
+        user_profile.update_groups(['python'])
+
+        # get_all_groups returns the prefered group and 'all'
+        groups = user_profile.get_all_groups()
+        self.assertEqual(sorted(groups), sorted(['all', 'python']))
+
 
 class ConsistencyTestCase(BaseTestCase):
     def setUp(self):
@@ -106,6 +118,7 @@ class ConsistencyTestCase(BaseTestCase):
         self.assertEqual(0, TestModel.all().count(3))
         # Ancestor query does see the data.
         self.assertEqual(2, TestModel.all().ancestor(user_key).count(3))
+
 
 if __name__ == '__main__':
     unittest.main()

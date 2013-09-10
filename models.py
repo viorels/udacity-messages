@@ -9,7 +9,7 @@ def user_key(user):
 
 class UserProfile(ndb.Model):
     user = ndb.UserProperty()
-    groups = ndb.StringProperty(repeated=True)
+    groups = ndb.StringProperty(repeated=True)  # use update_groups to write property
     last_group_message = ndb.DateTimeProperty(auto_now_add=True)
 
     @classmethod
@@ -28,9 +28,9 @@ class UserProfile(ndb.Model):
 
     def is_in_group(self, group):
         """ Check if user is in specified group """
-        return group in self.all_groups()
+        return group in self.get_all_groups()
 
-    def all_groups(self):
+    def get_all_groups(self):
         """ Return saved groups and special group 'all' """
         return self.groups + ['all']
 
@@ -38,9 +38,9 @@ class UserProfile(ndb.Model):
         """ Method called before listing messages to search for new group messages
             and insert them in users inbox """
         # logging.info('searching messages for groups %s newer then %s' % 
-        #              (self.all_groups(), self.last_group_message))
+        #              (self.get_all_groups(), self.last_group_message))
         last_time = self.last_group_message
-        for group_message in GroupMessage.query(GroupMessage.to_group.IN(self.all_groups()),
+        for group_message in GroupMessage.query(GroupMessage.to_group.IN(self.get_all_groups()),
                                                 GroupMessage.sent_time > self.last_group_message):
             # logging.info('found group message %s' % group_message)
             Message.send(from_user=group_message.from_user,

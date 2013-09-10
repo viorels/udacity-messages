@@ -39,7 +39,7 @@
         </form>
         <ul class="nav navbar-nav navbar-right">
           <li class="navbar-text">Hello, {{ user.nickname() }}</li>
-          <li><a href="#">Profile</a></li>
+          <li {% if nav_active == 'profile' %}class="active"{% endif %}><a href="/profile">Profile</a></li>
           <li><a href="{{ logout_url|safe }}">Logout</a></li>
         </ul>
       </div><!-- /.navbar-collapse -->

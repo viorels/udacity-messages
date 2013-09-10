@@ -101,6 +101,18 @@ class ComposePage(BaseRequestHandler):
                                      'to': to})
 
 
+class ProfilePage(BaseRequestHandler):
+    def get(self):
+        groups = UserProfile.for_user(users.get_current_user()).groups
+        groups_text = ', '.join(groups)
+        self.render('profile.html', {'groups': groups_text})
+
+    def post(self):
+        groups_text = self.request.get('groups')
+        groups = [group.strip() for group in groups_text.split(',')]
+        UserProfile.for_user(users.get_current_user()).update_groups(groups)
+        self.render('profile.html', {'saved': True, 'groups': groups_text})
+
 class InitPage(BaseRequestHandler):
     def get(self):
         Message.populate(users.get_current_user())
@@ -111,6 +123,7 @@ application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/inbox', InboxPage),
     ('/message/(.*)', MessagePage),
-    ('/compose', ComposePage),
+    ('/compose', ComposePage), 
+    ('/profile', ProfilePage),
     ('/init', InitPage),
 ], debug=_DEBUG)
