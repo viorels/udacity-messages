@@ -10,7 +10,9 @@
       {% if not message.is_read %}</strong>{% endif %}
     </td>
     <td class="col-md-8">
-      <span class="label label-info">group</span>
+      {% if message.to_group %}
+        <span class="label label-info">{{ message.to_group }}</span>
+      {% endif %}
       {% if not message.is_read %}<strong>{% endif %}
         <a href="{{ message.get_url()|safe }}">{{ message.subject }}</a>
       {% if not message.is_read %}</strong>{% endif %}
