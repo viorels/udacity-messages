@@ -67,7 +67,7 @@ class MessagesTestCase(BaseTestCase):
     def testInbox(self):
         self._sendMessage()
         self._sendMessage()
-        messages = Message.list_for_user(self.user2)
+        (messages, _, _) = Message.list_for_user(self.user2)
         self.assertEqual(2, len(messages))
 
     def testSendGroupMessage(self):
@@ -82,7 +82,7 @@ class MessagesTestCase(BaseTestCase):
         self.assertEqual(0, Message.query().count())
 
         # after checking messages a copy of the group message is stored in inbox
-        messages = Message.list_for_user(self.user2)
+        (messages, _, _) = Message.list_for_user(self.user2)
         self.assertEqual(1, len(messages))
 
     def testAnyUserBelongsToAllGroup(self):
