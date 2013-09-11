@@ -106,14 +106,6 @@ class Message(ndb.Model):
         key = message.put()
         logging.info('send %s => %s' % (subject, key))
 
-    @classmethod
-    def populate(cls, user, count=1):
-        """ Fill database with some random data """
-        for i in range(count):
-            cls.send(from_user=user, to_user=user,
-                     subject="subject %d" % i,
-                     content="content %d" % i)
-
 
 class GroupMessage(ndb.Model):
     """Models a group message"""

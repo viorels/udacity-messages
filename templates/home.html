@@ -5,9 +5,9 @@
   <div class="container">
     <h1>Hello, {{ user.nickname() }}!</h1>
     {% if not setup %}
-    <p>You can <a href="/setup">setup</a> your account with some messages and groups or just navigate around.</p>
+    <p>You can <a href="/setup">populate</a> your account with some messages and groups or just navigate around.</p>
     {% else %}
-    <p>Your user now has some new messages and belongs to groups "all" and "python".</p>
+    <p class="alert alert-success">Your user now has some new messages and belongs to groups "all" and "python".</p>
     {% endif %}
     <p>Go see your <a href="/inbox">inbox</a> or <a href="/compose">send</a> a messages to your email, other emails or groups like "all", "python" or others that you've assigned to users <a href="/profile">profiles</a>.</p>
     <p>Check the <a href="https://github.com/viorels/udacity-messages">source code</a> on Github</p>
@@ -15,7 +15,7 @@
       {% if setup %}
         <a href="/inbox" class="btn btn-primary btn-lg">Inbox</a>
       {% else %}
-        <a href="/setup" class="btn btn-primary btn-lg">Setup</a>
+        <a href="/setup" class="btn btn-primary btn-lg">Populate</a>
       {% endif %}
     </p>
   </div>

@@ -146,8 +146,15 @@ class ProfilePage(BaseRequestHandler):
 class SetupPage(BaseRequestHandler):
     def get(self):
         user = users.get_current_user()
-        Message.populate(user, 7)
+        for i in range(1, 4):
+            Message.send(from_user=user, to_user=user,
+                     subject="message %d" % i,
+                     content="content %d" % i)
         UserProfile.for_user(user).update_groups(['python'])
+        for group in ('all', 'python'):
+            GroupMessage.send(from_user=user, to_group=group,
+                              subject="group message for %s" % group,
+                              content="hello users of group %s" % group)
         self.render('home.html', {'setup': True})
 
 
