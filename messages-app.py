@@ -59,7 +59,7 @@ class MainPage(BaseRequestHandler):
 class InboxPage(BaseRequestHandler):
     def get(self, cursor_url):
         user = users.get_current_user()
-        messages, next_cursor, more = Message.list_for_user(user, cursor_url, limit=10)
+        messages, next_cursor, more = Message.list_for_user(user, cursor_url, limit=20)
         if (more and next_cursor):
             next_page_url = "/inbox/%s" % next_cursor.urlsafe()
         else:
