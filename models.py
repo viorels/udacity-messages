@@ -62,7 +62,6 @@ class Message(ndb.Model):
     subject = ndb.StringProperty(indexed=False)
     content = ndb.TextProperty(indexed=False)
     is_read = ndb.BooleanProperty(indexed=True, default=False)
-    is_deleted = ndb.BooleanProperty(indexed=False, default=False)
 
     def get_url(self):
         return "/message/" + self.key.urlsafe()
@@ -74,6 +73,11 @@ class Message(ndb.Model):
             message.is_read = True
             message.put()
         return message
+
+    @classmethod
+    def delete(cls, message_key_url):
+        """ Delete message with specified key encoded in url format """
+        ndb.Key(urlsafe=message_key_url).delete()
 
     @classmethod
     def list_for_user(cls, user, limit=100):

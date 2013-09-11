@@ -73,6 +73,19 @@ class MessagePage(BaseRequestHandler):
         else:
             self.error(404)
 
+    def post(self, message_key_url):
+        action = self.request.get('action')
+        if action == 'delete':
+            message = Message.get_message(message_key_url)
+            if message is not None:
+                if message.to_user.user_id() == users.get_current_user().user_id():
+                    Message.delete(message_key_url)
+                    self.redirect("/inbox")
+                else:
+                    self.error(403)
+            else:
+                self.error(404)
+
 
 class ComposePage(BaseRequestHandler):
     def get(self):
