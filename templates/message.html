@@ -4,7 +4,11 @@
 <ul class="list-group">
   <li class="list-group-item"><span class="col-md-1">Date</span>{{ message.sent_time }}</li>
   <li class="list-group-item"><span class="col-md-1">From</span>{{ message.from_user }}</li>
-  <li class="list-group-item"><span class="col-md-1">To</span>{{ message.to_user }}</li>
+  <li class="list-group-item">
+    <span class="col-md-1">To</span>
+    {{ message.to_user }}
+    <span class="label label-info">{{ message.to_group }}</span>
+  </li>
   <li class="list-group-item"><span class="col-md-1">Subject</span>{{ message.subject }}</li>
 </ul>
 <blockquote><p>{{ message.content }}</p></blockquote>
