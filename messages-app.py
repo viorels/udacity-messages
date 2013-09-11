@@ -57,9 +57,15 @@ class MainPage(BaseRequestHandler):
 
 
 class InboxPage(BaseRequestHandler):
-    def get(self):
+    def get(self, cursor_url):
         user = users.get_current_user()
-        self.render("inbox.html", {'messages': Message.list_for_user(user)})
+        messages, next_cursor, more = Message.list_for_user(user, cursor_url, limit=10)
+        if (more and next_cursor):
+            next_page_url = "/inbox/%s" % next_cursor.urlsafe()
+        else:
+            next_page_url = None
+        self.render("inbox.html", {'messages': messages,
+                                   'next_page_url': next_page_url})
 
 
 class MessagePage(BaseRequestHandler):
@@ -147,7 +153,7 @@ class SetupPage(BaseRequestHandler):
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/inbox', InboxPage),
+    ('/inbox/?(.*)', InboxPage),
     ('/message/(.*)', MessagePage),
     ('/compose', ComposePage), 
     ('/profile', ProfilePage),

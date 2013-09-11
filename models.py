@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from google.appengine.ext import ndb
+from google.appengine.datastore.datastore_query import Cursor
 
 def user_key(user):
     """Constructs a Datastore key based on user's email"""
@@ -80,10 +81,11 @@ class Message(ndb.Model):
         ndb.Key(urlsafe=message_key_url).delete()
 
     @classmethod
-    def list_for_user(cls, user, limit=100):
-        """Returns a list of messages delivered for the specified user"""
-        # TODO: use saved cursors for pagination
-        return cls.list_query(user).fetch(limit)
+    def list_for_user(cls, user, cursor_url=None, limit=10):
+        """ Returns a list of messages delivered for the specified user """
+        cursor = Cursor(urlsafe=cursor_url)
+        messages, next_cursor, more = cls.list_query(user).fetch_page(limit, start_cursor=cursor)
+        return (messages, next_cursor, more)
 
     @classmethod
     def list_query(cls, user):

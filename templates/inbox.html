@@ -24,7 +24,11 @@
   {% endfor %}
 </table>
 <ul class="pager">
-  <li class="previous disabled"><a href="#">&larr; Newer</a></li>
-  <li class="next"><a href="#">Older &rarr;</a></li>
+  <li class="previous {% if not prev_page_url %}disabled{% endif %}">
+    <a {% if prev_page_url %}href="{{ prev_page_url|safe }}"{% endif %}>&larr; Newer</a>
+  </li>
+  <li class="next {% if not next_page_url %}disabled{% endif %}">
+    <a {% if next_page_url %}href="{{ next_page_url|safe }}"{% endif %}>Older &rarr;</a>
+  </li>
 </ul>
 {% endblock %}
